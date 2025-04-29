@@ -1,7 +1,7 @@
 // script.js
 
 // Replace with your actual n8n webhook URL
-const WEBHOOK_URL = 'https://your-n8n-webhook-url/endpoint';
+const WEBHOOK_URL = 'http://localhost:5678/webhook/application-submit';
 
 const chatContainer = document.getElementById('chat-container');
 const userInput = document.getElementById('user-input');
