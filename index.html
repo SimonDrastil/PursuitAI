@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>EduChat AI</title>
+  
+  <!-- Google Font for modern typography -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet" />
+  
+  <!-- Main stylesheet -->
+  <link rel="stylesheet" href="index.css" />
+</head>
+<body>
+  <!-- Header / Hero -->
+  <header class="hero">
+    <nav class="nav">
+      <div class="logo">EduChat AI</div>
+      <ul class="nav-links">
+        <li><a href="#features">Features</a></li>
+        <li><a href="#chat">Chat</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+      <button class="btn btn-primary">Get Started</button>
+    </nav>
+    <div class="hero-content">
+      <h1>AI Chat for High School, College & Resumes</h1>
+      <p>Get instant, smart help with essays, study guides, college apps, and killer resumes.</p>
+      <button class="btn btn-secondary" id="scroll-chat">Try the Chat</button>
+    </div>
+  </header>
+
+  <!-- Features Section -->
+  <section id="features" class="features">
+    <div class="feature">
+      <h2>High School Help</h2>
+      <p>Homework, essays, project outlines & more.</p>
+    </div>
+    <div class="feature">
+      <h2>College Applications</h2>
+      <p>Personal statements, scholarship essays, Q&A.</p>
+    </div>
+    <div class="feature">
+      <h2>Resume Builder</h2>
+      <p>Professional templates, wording suggestions, tweaks.</p>
+    </div>
+  </section>
+
+  <!-- Chat Section -->
+  <section id="chat" class="chat-section">
+    <div class="chat-container" id="chat-container">
+      <!-- Chat UI will be injected here by script.js -->
+    </div>
+    <div class="chat-input">
+      <input type="text" id="user-input" placeholder="Type your question…" />
+      <button class="btn btn-primary" id="send-btn">Send</button>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer id="contact" class="footer">
+    <p>&copy; 2025 EduChat AI. Built for students and professionals.</p>
+  </footer>
+
+  <!-- Chat logic -->
+  <script src="script.js"></script>
+</body>
+</html>
