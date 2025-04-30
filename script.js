@@ -1,6 +1,6 @@
 // script.js
 
-const WEBHOOK_URL = 'https://your-domain-or-tunnel/webhook/application-submit';
+const WEBHOOK_URL = 'https://n8n-production-f223.up.railway.app/webhook/[REDACTED]/chat';
 const chatContainer = document.getElementById('chat-container');
 const userInput     = document.getElementById('user-input');
 const sendBtn       = document.getElementById('send-btn');
