@@ -1,360 +1,911 @@
-<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>DescriptoBot – AI Product Description Generator</title>
-  <script src="https://cdn.tailwindcss.com/3.4.16"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: { primary: '#000000', secondary: '#ffffff' },
-          borderRadius: {
-            none: '0px', sm: '4px', DEFAULT: '8px', md: '12px',
-            lg: '16px', xl: '20px', '2xl': '24px', '3xl': '32px',
-            full: '9999px', button: '8px'
-          }
-        }
-      }
-    };
-  </script>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css"/>
-  <style>
-    /* your existing keyframes, animations, utility styles… */
-    body { font-family: 'Inter', sans-serif; background:#fff; color:#111; overflow-x:hidden; }
-    section { scroll-margin-top:5rem; }
-    .glass-effect { background:rgba(255,255,255,0.7); backdrop-filter:blur(10px); border:1px solid rgba(255,255,255,0.2); }
-    .gradient-border { position:relative; background:linear-gradient(white,white) padding-box, linear-gradient(45deg,#000,#4F46E5) border-box; border:1px solid transparent; border-radius:2rem; overflow:hidden }
-    .feature-card, .pricing-card { transition:.3s ease; position:relative; overflow:hidden; }
-    .feature-card:hover::before { opacity:1; }
-    /* …and all your other styles exactly as before… */
-    .hero-bg { background-image:url('https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=1600&q=80'); background-size:cover; background-position:center; }
-    .scroll-smooth { scroll-behavior:smooth; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DescriptoBot - AI Product Description Generator</title>
+<script src="https://cdn.tailwindcss.com/3.4.16"></script>
+<script>tailwind.config={theme:{extend:{colors:{primary:'#000000',secondary:'#ffffff'},borderRadius:{'none':'0px','sm':'4px',DEFAULT:'8px','md':'12px','lg':'16px','xl':'20px','2xl':'24px','3xl':'32px','full':'9999px','button':'8px'}}}}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+@keyframes float {
+0% { transform: translateY(0px); }
+50% { transform: translateY(-20px); }
+100% { transform: translateY(0px); }
+}
+@keyframes slideInFromBottom {
+0% { transform: translateY(100px); opacity: 0; }
+100% { transform: translateY(0); opacity: 1; }
+}
+@keyframes slideInFromLeft {
+0% { transform: translateX(-100px); opacity: 0; }
+100% { transform: translateX(0); opacity: 1; }
+}
+@keyframes slideInFromRight {
+0% { transform: translateX(100px); opacity: 0; }
+100% { transform: translateX(0); opacity: 1; }
+}
+.animate-slide-in {
+opacity: 0;
+animation: slideInFromBottom 0.8s ease forwards;
+}
+.animate-slide-left {
+opacity: 0;
+animation: slideInFromLeft 0.8s ease forwards;
+}
+.animate-slide-right {
+opacity: 0;
+animation: slideInFromRight 0.8s ease forwards;
+}
+.feature-card, .pricing-card {
+border-radius: 2xl;
+overflow: hidden;
+transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.feature-card:hover, .pricing-card:hover {
+transform: translateY(-8px);
+box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+section {
+scroll-margin-top: 5rem;
+}
+@keyframes rotate3d {
+0% { transform: perspective(1000px) rotateX(0deg); }
+100% { transform: perspective(1000px) rotateX(360deg); }
+}
+.glass-effect {
+background: rgba(255, 255, 255, 0.7);
+backdrop-filter: blur(10px);
+border: 1px solid rgba(255, 255, 255, 0.2);
+}
+.gradient-border {
+position: relative;
+background: linear-gradient(white, white) padding-box,
+linear-gradient(45deg, #000000, #4F46E5) border-box;
+border: 1px solid transparent;
+border-radius: 2rem;
+overflow: hidden;
+}
+.feature-card {
+transition: all 0.3s ease;
+position: relative;
+overflow: hidden;
+}
+.feature-card::before {
+content: '';
+position: absolute;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background: linear-gradient(45deg, rgba(79, 70, 229, 0.1), transparent);
+opacity: 0;
+transition: opacity 0.3s ease;
+}
+.feature-card:hover::before {
+opacity: 1;
+}
+.feature-icon {
+transition: all 0.3s ease;
+}
+.feature-card:hover .feature-icon {
+transform: scale(1.1);
+color: #4F46E5;
+}
+.hover-lift {
+transition: transform 0.2s ease;
+}
+.hover-lift:hover {
+transform: translateY(-4px);
+}
+.scroll-section {
+transform-style: preserve-3d;
+perspective: 1000px;
+transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+}
+.scroll-section.in-view {
+transform: translateZ(0) rotateX(0);
+opacity: 1;
+}
+.scroll-section:not(.in-view) {
+transform: translateZ(-100px) rotateX(10deg);
+opacity: 0;
+}
+.card-underglow {
+position: relative;
+}
+.card-underglow::after {
+content: '';
+position: absolute;
+left: 0;
+right: 0;
+bottom: -20px;
+height: 40px;
+background: radial-gradient(ellipse at center, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0) 70%);
+filter: blur(10px);
+z-index: -1;
+opacity: 0;
+transition: opacity 0.3s ease;
+}
+.card-underglow:hover::after {
+opacity: 1;
+}
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
+<style>
+:where([class^="ri-"])::before { content: "\f3c2"; }
+body {
+font-family: 'Inter', sans-serif;
+background-color: #ffffff;
+color: #111827;
+overflow-x: hidden;
+}
+.glow-effect {
+position: relative;
+}
+.glow-effect::before {
+content: '';
+position: absolute;
+inset: -2px;
+background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.8), transparent 70%);
+opacity: 0;
+transition: opacity 0.3s ease;
+border-radius: inherit;
+z-index: -1;
+}
+.glow-effect:hover::before {
+opacity: 1;
+}
+.dark-glow-effect {
+position: relative;
+}
+.dark-glow-effect::before {
+content: '';
+position: absolute;
+inset: -2px;
+background: radial-gradient(circle at 50% 50%, rgba(0, 0, 0, 0.15), transparent 70%);
+opacity: 0;
+transition: opacity 0.3s ease;
+border-radius: inherit;
+z-index: -1;
+}
+.dark-glow-effect:hover::before {
+opacity: 1;
+}
+.pricing-card {
+transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.pricing-card:hover {
+transform: translateY(-8px);
+box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+.animate-fade-in {
+animation: fadeIn 0.8s ease-in-out;
+}
+.animate-slide-up {
+animation: slideUp 0.8s ease-in-out;
+}
+.animate-slide-in-right {
+animation: slideInRight 0.5s ease-in-out;
+}
+@keyframes fadeIn {
+from { opacity: 0; }
+to { opacity: 1; }
+}
+@keyframes slideUp {
+from { transform: translateY(30px); opacity: 0; }
+to { transform: translateY(0); opacity: 1; }
+}
+@keyframes slideInRight {
+from { transform: translateX(100px); opacity: 0; }
+to { transform: translateX(0); opacity: 1; }
+}
+.hero-bg {
+background-image: url('https://readdy.ai/api/search-image?query=Minimalist%20futuristic%20technology%20interface%20with%20a%20sleek%20black%20and%20white%20gradient%2C%20subtle%20digital%20elements%2C%20and%20a%20clean%20design%20aesthetic.%20The%20left%20side%20has%20a%20smooth%20transition%20to%20white%20space%20for%20text%20placement%2C%20while%20the%20right%20side%20features%20abstract%20AI%20visualization%20elements.%20The%20overall%20look%20is%20modern%2C%20elegant%2C%20and%20professional%20with%20perfect%20balance%20between%20dark%20and%20light%20areas.&width=1600&height=800&seq=1&orientation=landscape');
+background-size: cover;
+background-position: center;
+}
+.chat-container {
+transition: all 0.3s ease;
+}
+.chat-window {
+height: 0;
+transition: height 0.3s ease;
+}
+.chat-window.open {
+height: 500px;
+}
+.chat-message {
+animation: fadeIn 0.3s ease-in-out;
+}
+input[type="range"]::-webkit-slider-thumb {
+appearance: none;
+width: 20px;
+height: 20px;
+background: #000;
+border-radius: 50%;
+cursor: pointer;
+}
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+-webkit-appearance: none;
+margin: 0;
+}
+.custom-checkbox {
+display: inline-block;
+position: relative;
+cursor: pointer;
+}
+.custom-checkbox input {
+position: absolute;
+opacity: 0;
+cursor: pointer;
+}
+.checkmark {
+position: absolute;
+top: 0;
+left: 0;
+height: 20px;
+width: 20px;
+background-color: #f3f4f6;
+border: 1px solid #d1d5db;
+border-radius: 4px;
+transition: all 0.2s ease;
+}
+.custom-checkbox input:checked ~ .checkmark {
+background-color: #000;
+border-color: #000;
+}
+.checkmark:after {
+content: "";
+position: absolute;
+display: none;
+}
+.custom-checkbox input:checked ~ .checkmark:after {
+display: block;
+left: 7px;
+top: 3px;
+width: 6px;
+height: 10px;
+border: solid white;
+border-width: 0 2px 2px 0;
+transform: rotate(45deg);
+}
+.switch {
+position: relative;
+display: inline-block;
+width: 48px;
+height: 24px;
+}
+.switch input {
+opacity: 0;
+width: 0;
+height: 0;
+}
+.slider {
+position: absolute;
+cursor: pointer;
+top: 0;
+left: 0;
+right: 0;
+bottom: 0;
+background-color: #e5e7eb;
+transition: .4s;
+border-radius: 24px;
+}
+.slider:before {
+position: absolute;
+content: "";
+height: 18px;
+width: 18px;
+left: 3px;
+bottom: 3px;
+background-color: white;
+transition: .4s;
+border-radius: 50%;
+}
+input:checked + .slider {
+background-color: #000;
+}
+input:checked + .slider:before {
+transform: translateX(24px);
+}
+.scroll-smooth {
+scroll-behavior: smooth;
+}
+</style>
 </head>
 <body class="min-h-screen scroll-smooth">
-
-  <!-- PROGRESS + SECTION DOTS (unchanged) -->
-  <div class="scroll-progress fixed top-0 left-0 right-0 h-1 bg-gray-200">
-    <div class="scroll-progress-bar bg-primary h-full" style="width:0%"></div>
-  </div>
-  <div class="section-indicator fixed right-4 top-1/3 z-40 flex flex-col space-y-2">
-    <div class="section-dot w-3 h-3 bg-gray-300 rounded-full" data-section="Hero"></div>
-    <div class="section-dot w-3 h-3 bg-gray-300 rounded-full" data-section="Features"></div>
-    <div class="section-dot w-3 h-3 bg-gray-300 rounded-full" data-section="How It Works"></div>
-    <div class="section-dot w-3 h-3 bg-gray-300 rounded-full" data-section="Testimonials"></div>
-    <div class="section-dot w-3 h-3 bg-gray-300 rounded-full" data-section="Pricing"></div>
-    <div class="section-dot w-3 h-3 bg-gray-300 rounded-full" data-section="About"></div>
-  </div>
-
-  <!-- NAVIGATION -->
-  <nav class="fixed top-0 left-0 right-0 h-20 glass-effect z-50">
-    <div class="container mx-auto px-8 h-full flex items-center justify-between">
-      <a href="#" class="flex items-center">
-        <!-- logo doubled in height -->
-        <img src="https://static.readdy.ai/image/e29a8849a25595c80a29fc242032cdec/d1380c7dacf959a27cc91ffa249a09fc.png"
-             alt="DescriptoBot AI" class="h-16"/>
-      </a>
-      <div class="flex items-center space-x-8">
-        <a href="#pricing" class="nav-link text-gray-800 hover:text-primary transition">Pricing</a>
-        <a href="#about"   class="nav-link text-gray-800 hover:text-primary transition">About</a>
-        <!-- nav bar “Get Started” left unlinked -->
-        <a href="#"         class="bg-primary text-white px-5 py-2 !rounded-button hover:bg-gray-800 transition">
-          Get Started
-        </a>
-      </div>
-    </div>
-  </nav>
-
-  <!-- HERO -->
-  <section class="hero-bg pt-40 pb-32 relative overflow-hidden">
-    <div class="absolute inset-0 bg-gradient-to-r from-white via-white/90 to-transparent"></div>
-    <div class="container mx-auto px-8 relative z-10 max-w-2xl animate-fade-in">
-      <h1 class="text-5xl font-bold leading-tight mb-6">
-        Transform Your Product Descriptions with AI
-      </h1>
-      <p class="text-xl text-gray-700 mb-8">
-        DescriptoBot uses advanced AI to generate compelling, conversion-focused product descriptions in seconds.
-      </p>
-      <div class="flex flex-wrap gap-4">
-        <!-- linked to pricing -->
-        <a href="#pricing" class="bg-primary text-white px-6 py-3 !rounded-button hover:bg-gray-800 transition">
-          Try for Free
-        </a>
-        <a href="#how-it-works" class="border border-gray-300 px-6 py-3 !rounded-button hover:bg-gray-100 transition">
-          How It Works
-        </a>
-      </div>
-    </div>
-  </section>
-
-  <!-- FEATURES -->
-  <section class="py-24 bg-gradient-to-b from-white to-gray-50/30">
-    <div class="container mx-auto px-6">
-      <div class="text-center max-w-3xl mx-auto mb-16 animate-slide-up">
-        <h2 class="text-3xl font-bold mb-4">Powerful AI Features</h2>
-        <p class="text-gray-600">Everything you need to create perfect product descriptions</p>
-      </div>
-      <div class="grid md:grid-cols-3 gap-8">
-        <div class="gradient-border bg-white p-8 rounded-lg hover-lift feature-card">
-          <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-6">
-            <i class="ri-magic-line ri-lg"></i>
-          </div>
-          <h3 class="text-xl font-semibold mb-3">AI Generation</h3>
-          <p class="text-gray-600">Generate descriptions in seconds with advanced AI.</p>
-        </div>
-        <div class="gradient-border bg-white p-8 rounded-lg hover-lift feature-card">
-          <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-6">
-            <i class="ri-edit-line ri-lg"></i>
-          </div>
-          <h3 class="text-xl font-semibold mb-3">Customization</h3>
-          <p class="text-gray-600">Match your brand voice, tone, and details.</p>
-        </div>
-        <div class="gradient-border bg-white p-8 rounded-lg hover-lift feature-card">
-          <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-6">
-            <i class="ri-translate-2-line ri-lg"></i>
-          </div>
-          <h3 class="text-xl font-semibold mb-3">Multi-language</h3>
-          <p class="text-gray-600">Localize for any market, instantly.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- HOW IT WORKS -->
-  <section id="how-it-works" class="py-20">
-    <div class="container mx-auto px-6">
-      <div class="text-center max-w-3xl mx-auto mb-16">
-        <h2 class="text-3xl font-bold mb-4">How DescriptoBot Works</h2>
-        <p class="text-gray-600">Three simple steps to transform your product descriptions</p>
-      </div>
-      <div class="grid md:grid-cols-3 gap-12">
-        <div class="text-center">
-          <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
-            <span class="text-2xl font-bold">1</span>
-          </div>
-          <h3 class="text-xl font-semibold mb-3">Input Details</h3>
-          <p class="text-gray-600">Enter features, specs, audience, tone.</p>
-        </div>
-        <div class="text-center">
-          <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
-            <span class="text-2xl font-bold">2</span>
-          </div>
-          <h3 class="text-xl font-semibold mb-3">AI Magic</h3>
-          <p class="text-gray-600">Our AI crafts multiple description options.</p>
-        </div>
-        <div class="text-center">
-          <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
-            <span class="text-2xl font-bold">3</span>
-          </div>
-          <h3 class="text-xl font-semibold mb-3">Review & Export</h3>
-          <p class="text-gray-600">Pick, tweak, and copy to your store.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- TESTIMONIALS -->
-  <section class="py-24 bg-gradient-to-b from-white to-gray-50/30">
-    <div class="container mx-auto px-6">
-      <div class="text-center max-w-3xl mx-auto mb-16">
-        <h2 class="text-3xl font-bold mb-4">What Our Customers Say</h2>
-        <p class="text-gray-600">Trusted by e-commerce pros worldwide</p>
-      </div>
-      <div class="grid md:grid-cols-3 gap-8">
-        <div class="bg-white p-8 rounded shadow-sm">
-          <div class="flex items-center mb-4 text-yellow-400">
-            <i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i>
-          </div>
-          <p class="text-gray-600 mb-6">"37% lift in conversions thanks to DescriptoBot!"</p>
-          <div class="flex items-center">
-            <div class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center mr-3">
-              <i class="ri-user-line"></i>
-            </div>
-            <div>
-              <h4 class="font-semibold">Emily R.</h4>
-              <p class="text-sm text-gray-500">TechGadgets</p>
-            </div>
-          </div>
-        </div>
-        <div class="bg-white p-8 rounded shadow-sm">
-          <div class="flex items-center mb-4 text-yellow-400">
-            <i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i>
-          </div>
-          <p class="text-gray-600 mb-6">"What took hours takes minutes now."</p>
-          <div class="flex items-center">
-            <div class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center mr-3">
-              <i class="ri-user-line"></i>
-            </div>
-            <div>
-              <h4 class="font-semibold">Michael D.</h4>
-              <p class="text-sm text-gray-500">StyleHouse</p>
-            </div>
-          </div>
-        </div>
-        <div class="bg-white p-8 rounded shadow-sm">
-          <div class="flex items-center mb-4 text-yellow-400">
-            <i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i>
-          </div>
-          <p class="text-gray-600 mb-6">"Pro copywriter quality at DIY cost."</p>
-          <div class="flex items-center">
-            <div class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center mr-3">
-              <i class="ri-user-line"></i>
-            </div>
-            <div>
-              <h4 class="font-semibold">Sarah J.</h4>
-              <p class="text-sm text-gray-500">Artisan Crafts Co.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- PRICING -->
-  <section id="pricing" class="py-20">
-    <div class="container mx-auto px-6">
-      <div class="text-center max-w-3xl mx-auto mb-16">
-        <h2 class="text-3xl font-bold mb-4">Simple, Transparent Pricing</h2>
-        <p class="text-gray-600">Choose your plan</p>
-      </div>
-      <div class="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-        <!-- Free Plan -->
-        <div class="bg-white/80 backdrop-blur-sm border border-gray-100 rounded-xl p-8 pricing-card hover-lift shadow-lg">
-          <h3 class="text-xl font-bold mb-2">Free</h3>
-          <p class="text-gray-500 mb-6">Try it out</p>
-          <div class="text-4xl font-bold mb-6">$0<span class="text-lg font-normal text-gray-500">/mo</span></div>
-          <ul class="space-y-3 mb-8">
-            <li class="flex items-center"><i class="ri-check-line text-green-500 mr-2"></i>10 descriptions/month</li>
-            <li class="flex items-center"><i class="ri-check-line text-green-500 mr-2"></i>Basic customization</li>
-            <li class="flex items-center"><i class="ri-check-line text-green-500 mr-2"></i>Single language</li>
-            <li class="flex items-center text-gray-400"><i class="ri-close-line mr-2"></i>No team access</li>
-            <li class="flex items-center text-gray-400"><i class="ri-close-line mr-2"></i>No API</li>
-          </ul>
-          <a href="#pricing" class="block w-full text-center border border-gray-300 py-2 !rounded-button hover:bg-gray-50 transition">
-            Get Started
-          </a>
-        </div>
-        <!-- Pro Plan -->
-        <div class="bg-white border-2 border-primary rounded p-8 shadow-md relative pricing-card glow-effect">
-          <div class="absolute top-0 right-0 bg-primary text-white text-sm py-1 px-3 rounded-bl">Most Popular</div>
-          <h3 class="text-xl font-bold mb-2">Pro</h3>
-          <p class="text-gray-500 mb-6">Growing businesses</p>
-          <div class="text-4xl font-bold mb-6">$19<span class="text-lg font-normal text-gray-500">/mo</span></div>
-          <ul class="space-y-3 mb-8">
-            <li class="flex items-center"><i class="ri-check-line text-green-500 mr-2"></i>500 descriptions</li>
-            <li class="flex items-center"><i class="ri-check-line text-green-500 mr-2"></i>Advanced customization</li>
-            <li class="flex items-center"><i class="ri-check-line text-green-500 mr-2"></i>5 languages</li>
-            <li class="flex items-center"><i class="ri-check-line text-green-500 mr-2"></i>Team access (3 users)</li>
-            <li class="flex items-center text-gray-400"><i class="ri-close-line mr-2"></i>No API access</li>
-          </ul>
-          <a href="#pricing" class="block w-full text-center bg-primary text-white py-2 !rounded-button hover:bg-gray-800 transition">
-            Get Started
-          </a>
-        </div>
-        <!-- Enterprise Plan -->
-        <div class="bg-white/80 backdrop-blur-sm border border-gray-100 rounded-xl p-8 pricing-card hover-lift shadow-lg">
-          <h3 class="text-xl font-bold mb-2">Enterprise</h3>
-          <p class="text-gray-500 mb-6">Full power</p>
-          <div class="text-4xl font-bold mb-6">$149<span class="text-lg font-normal text-gray-500">/mo</span></div>
-          <ul class="space-y-3 mb-8">
-            <li class="flex items-center"><i class="ri-check-line text-green-500 mr-2"></i>Unlimited descriptions</li>
-            <li class="flex items-center"><i class="ri-check-line text-green-500 mr-2"></i>Complete customization</li>
-            <li class="flex items-center"><i class="ri-check-line text-green-500 mr-2"></i>All languages</li>
-            <li class="flex items-center"><i class="ri-check-line text-green-500 mr-2"></i>Unlimited teams</li>
-            <li class="flex items-center"><i class="ri-check-line text-green-500 mr-2"></i>Full API access</li>
-          </ul>
-          <a href="#pricing" class="block w-full text-center border border-gray-300 py-2 !rounded-button hover:bg-gray-50 transition">
-            Contact Sales
-          </a>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ABOUT -->
-  <section id="about" class="py-20 bg-gray-50">
-    <div class="container mx-auto px-6 max-w-4xl">
-      <h2 class="text-4xl font-bold mb-8 text-center font-['Pacifico']">About DescriptoBot AI</h2>
-      <div class="bg-white p-8 rounded shadow-lg mb-8 border border-gray-100">
-        <h3 class="text-xl font-semibold mb-4">Our Mission</h3>
-        <p class="text-gray-600">We revolutionize product content with AI–driven, conversion-focused copy, enabling any seller to scale effortlessly.</p>
-      </div>
-      <div class="bg-white p-8 rounded shadow-lg border border-gray-100">
-        <h3 class="text-xl font-semibold mb-4">Our Technology</h3>
-        <p class="text-gray-600">Powered by GPT-4o, trained on millions of top-performing listings, delivering on-brand, high-converting descriptions.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- CTA -->
-  <section class="py-20 bg-primary/5 text-gray-900">
-    <div class="container mx-auto px-6 text-center">
-      <h2 class="text-3xl font-bold mb-6">Ready to Transform Your Product Descriptions?</h2>
-      <p class="text-xl text-gray-600 mb-8">Join thousands using DescriptoBot to boost sales with pro-quality copy in seconds.</p>
-      <div class="flex justify-center space-x-4">
-        <a href="#pricing" class="bg-primary text-white px-6 py-3 !rounded-button hover:bg-gray-800 transition">Start Free Trial</a>
-        <a href="#pricing" class="border border-primary text-primary px-6 py-3 !rounded-button hover:bg-primary/5 transition">Schedule Demo</a>
-      </div>
-    </div>
-  </section>
-
-  <!-- FOOTER -->
-  <footer class="bg-gray-50 text-gray-600 py-12">
-    <div class="container mx-auto px-6">
-      <div class="grid md:grid-cols-4 gap-8">
-        <div>
-          <a href="#" class="font-['Pacifico'] text-2xl text-gray-900 mb-4 block">DescriptoBot</a>
-          <p class="text-gray-500">AI-powered product descriptions that convert.</p>
-        </div>
-        <div>
-          <h4 class="text-gray-900 font-semibold mb-4">Product</h4>
-          <ul class="space-y-2">
-            <li><a href="#" class="hover:text-primary">Features</a></li>
-            <li><a href="#" class="hover:text-primary">Pricing</a></li>
-            <li><a href="#" class="hover:text-primary">API</a></li>
-            <li><a href="#" class="hover:text-primary">Integrations</a></li>
-          </ul>
-        </div>
-        <div>
-          <h4 class="text-gray-900 font-semibold mb-4">Resources</h4>
-          <ul class="space-y-2">
-            <li><a href="#" class="hover:text-primary">Docs</a></li>
-            <li><a href="#" class="hover:text-primary">Blog</a></li>
-            <li><a href="#" class="hover:text-primary">Case Studies</a></li>
-            <li><a href="#" class="hover:text-primary">Help Center</a></li>
-          </ul>
-        </div>
-        <div>
-          <h4 class="text-gray-900 font-semibold mb-4">Company</h4>
-          <ul class="space-y-2">
-            <li><a href="#" class="hover:text-primary">About Us</a></li>
-            <li><a href="#" class="hover:text-primary">Careers</a></li>
-            <li><a href="#" class="hover:text-primary">Contact</a></li>
-            <li><a href="#" class="hover:text-primary">Privacy Policy</a></li>
-          </ul>
-        </div>
-      </div>
-      <div class="border-t border-gray-200 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
-        <p>© 2025 DescriptoBot. All rights reserved.</p>
-        <div class="flex space-x-4 mt-4 md:mt-0">
-          <a href="#" class="text-gray-400 hover:text-primary"><i class="ri-twitter-x-line ri-lg"></i></a>
-          <a href="#" class="text-gray-400 hover:text-primary"><i class="ri-linkedin-line ri-lg"></i></a>
-          <a href="#" class="text-gray-400 hover:text-primary"><i class="ri-facebook-line ri-lg"></i></a>
-          <a href="#" class="text-gray-400 hover:text-primary"><i class="ri-instagram-line ri-lg"></i></a>
-        </div>
-      </div>
-    </div>
-  </footer>
-
-  <!-- SCROLL, DOTS, ANIMATION & CHAT SCRIPT (unchanged) -->
-  <script>
-    /* your existing JS for scroll‐progress, section‐dots, animations, chat limits… */
-    /* (no readdy.ai references, everything else works out of the box) */
-  </script>
+<div class="scroll-progress">
+<div class="scroll-progress-bar"></div>
+</div>
+<div class="section-indicator">
+<div class="section-dot" data-section="Hero"></div>
+<div class="section-dot" data-section="Features"></div>
+<div class="section-dot" data-section="How It Works"></div>
+<div class="section-dot" data-section="Testimonials"></div>
+<div class="section-dot" data-section="Pricing"></div>
+<div class="section-dot" data-section="About"></div>
+</div>
+<!-- Navigation -->
+<nav class="fixed top-0 left-0 right-0 h-20 glass-effect z-50">
+<div class="container mx-auto px-8 h-full flex items-center justify-between">
+<a href="#" class="flex items-center">
+<img src="https://static.readdy.ai/image/e29a8849a25595c80a29fc242032cdec/d1380c7dacf959a27cc91ffa249a09fc.png" alt="DescriptoBot AI" class="h-8">
+</a>
+<div class="flex items-center space-x-8">
+<a href="#pricing" class="nav-link text-gray-800 hover:text-primary transition-colors duration-200">Pricing</a>
+<a href="#about" class="nav-link text-gray-800 hover:text-primary transition-colors duration-200">About</a>
+<a href="get started" class="bg-primary text-white px-5 py-2 !rounded-button hover:bg-gray-800 transition-colors duration-200 whitespace-nowrap">Get Started</a>
+</div>
+</div>
+</nav>
+<!-- Hero Section -->
+<section class="hero-bg pt-40 pb-32 relative overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-r from-white via-white/90 to-transparent"></div>
+<div class="container mx-auto px-8 relative z-10">
+<div class="max-w-2xl animate-fade-in">
+<div class="absolute -top-40 -right-40 w-96 h-96 bg-primary/5 rounded-full blur-3xl"></div>
+<div class="absolute -bottom-40 -left-40 w-96 h-96 bg-primary/5 rounded-full blur-3xl"></div>
+<h1 class="text-5xl font-bold leading-tight mb-6">Transform Your Product Descriptions with AI</h1>
+<p class="text-xl text-gray-700 mb-8">DescriptoBot uses advanced AI to generate compelling, conversion-focused product descriptions in seconds. Save time and boost sales with professionally crafted content.</p>
+<div class="flex flex-wrap gap-4">
+<a href="#" class="bg-primary text-white px-6 py-3 !rounded-button hover:bg-gray-800 transition-colors duration-200 whitespace-nowrap">Try for Free</a>
+<a href="#how-it-works" class="border border-gray-300 px-6 py-3 !rounded-button hover:bg-gray-100 transition-colors duration-200 whitespace-nowrap">How It Works</a>
+</div>
+</div>
+</div>
+</section>
+<!-- Features Section -->
+<section class="py-24 bg-gradient-to-b from-white to-gray-50/30">
+<div class="container mx-auto px-6">
+<div class="text-center max-w-3xl mx-auto mb-16 animate-slide-up">
+<h2 class="text-3xl font-bold mb-4">Powerful AI Features</h2>
+<p class="text-gray-600">Our AI-powered platform offers everything you need to create perfect product descriptions</p>
+</div>
+<div class="grid md:grid-cols-3 gap-8">
+<div class="gradient-border bg-white p-8 rounded-lg hover-lift feature-card">
+<div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-6">
+<i class="ri-magic-line ri-lg"></i>
+</div>
+<h3 class="text-xl font-semibold mb-3">AI Generation</h3>
+<p class="text-gray-600">Generate compelling product descriptions with just a few clicks using our advanced AI technology.</p>
+</div>
+<div class="gradient-border bg-white p-8 rounded-lg hover-lift feature-card">
+<div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-6">
+<i class="ri-edit-line ri-lg"></i>
+</div>
+<h3 class="text-xl font-semibold mb-3">Customization</h3>
+<p class="text-gray-600">Tailor descriptions to match your brand voice, target audience, and specific product details.</p>
+</div>
+<div class="gradient-border bg-white p-8 rounded-lg hover-lift feature-card">
+<div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-6">
+<i class="ri-translate-2-line ri-lg"></i>
+</div>
+<h3 class="text-xl font-semibold mb-3">Multi-language</h3>
+<p class="text-gray-600">Translate your product descriptions into multiple languages with perfect localization.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- How It Works Section -->
+<section id="how-it-works" class="py-20">
+<div class="container mx-auto px-6">
+<div class="text-center max-w-3xl mx-auto mb-16">
+<h2 class="text-3xl font-bold mb-4">How DescriptoBot Works</h2>
+<p class="text-gray-600">Three simple steps to transform your product descriptions</p>
+</div>
+<div class="grid md:grid-cols-3 gap-12">
+<div class="text-center">
+<div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+<span class="text-2xl font-bold">1</span>
+</div>
+<h3 class="text-xl font-semibold mb-3">Input Product Details</h3>
+<p class="text-gray-600">Enter basic information about your product including features, specifications, and target audience.</p>
+</div>
+<div class="text-center">
+<div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+<span class="text-2xl font-bold">2</span>
+</div>
+<h3 class="text-xl font-semibold mb-3">AI Generation</h3>
+<p class="text-gray-600">Our AI analyzes your input and generates multiple compelling description options.</p>
+</div>
+<div class="text-center">
+<div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+<span class="text-2xl font-bold">3</span>
+</div>
+<h3 class="text-xl font-semibold mb-3">Review & Export</h3>
+<p class="text-gray-600">Choose your favorite description, make any final edits, and export to your platform.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Testimonials Section -->
+<section class="py-24 bg-gradient-to-b from-white to-gray-50/30">
+<div class="container mx-auto px-6">
+<div class="text-center max-w-3xl mx-auto mb-16">
+<h2 class="text-3xl font-bold mb-4">What Our Customers Say</h2>
+<p class="text-gray-600">Trusted by thousands of e-commerce businesses worldwide</p>
+</div>
+<div class="grid md:grid-cols-3 gap-8">
+<div class="bg-white p-8 rounded shadow-sm">
+<div class="flex items-center mb-4">
+<i class="ri-star-fill text-yellow-400"></i>
+<i class="ri-star-fill text-yellow-400"></i>
+<i class="ri-star-fill text-yellow-400"></i>
+<i class="ri-star-fill text-yellow-400"></i>
+<i class="ri-star-fill text-yellow-400"></i>
+</div>
+<p class="text-gray-600 mb-6">"DescriptoBot has completely transformed our product listing process. We've seen a 32% increase in conversion rates since implementing their AI descriptions."</p>
+<div class="flex items-center">
+<div class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center mr-3">
+<i class="ri-user-line"></i>
+</div>
+<div>
+<h4 class="font-semibold">Emily Richardson</h4>
+<p class="text-sm text-gray-500">Marketing Director, TechGadgets</p>
+</div>
+</div>
+</div>
+<div class="bg-white p-8 rounded shadow-sm">
+<div class="flex items-center mb-4">
+<i class="ri-star-fill text-yellow-400"></i>
+<i class="ri-star-fill text-yellow-400"></i>
+<i class="ri-star-fill text-yellow-400"></i>
+<i class="ri-star-fill text-yellow-400"></i>
+<i class="ri-star-fill text-yellow-400"></i>
+</div>
+<p class="text-gray-600 mb-6">"The time savings alone are worth it. What used to take our team hours now takes minutes, and the quality is consistently better than what we were producing manually."</p>
+<div class="flex items-center">
+<div class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center mr-3">
+<i class="ri-user-line"></i>
+</div>
+<div>
+<h4 class="font-semibold">Michael Donovan</h4>
+<p class="text-sm text-gray-500">E-commerce Manager, StyleHouse</p>
+</div>
+</div>
+</div>
+<div class="bg-white p-8 rounded shadow-sm">
+<div class="flex items-center mb-4">
+<i class="ri-star-fill text-yellow-400"></i>
+<i class="ri-star-fill text-yellow-400"></i>
+<i class="ri-star-fill text-yellow-400"></i>
+<i class="ri-star-fill text-yellow-400"></i>
+<i class="ri-star-fill text-yellow-400"></i>
+</div>
+<p class="text-gray-600 mb-6">"As a small business owner, I couldn't afford a professional copywriter. DescriptoBot gives me professional-quality descriptions at a fraction of the cost."</p>
+<div class="flex items-center">
+<div class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center mr-3">
+<i class="ri-user-line"></i>
+</div>
+<div>
+<h4 class="font-semibold">Sarah Johnson</h4>
+<p class="text-sm text-gray-500">Owner, Artisan Crafts Co.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Pricing Section -->
+<section id="pricing" class="py-20">
+<div class="container mx-auto px-6">
+<div class="text-center max-w-3xl mx-auto mb-16">
+<h2 class="text-3xl font-bold mb-4">Simple, Transparent Pricing</h2>
+<p class="text-gray-600">Choose the plan that works for your business</p>
+</div>
+<div class="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+<div class="bg-white/80 backdrop-blur-sm border border-gray-100 rounded-xl p-8 pricing-card hover-lift shadow-lg">
+<h3 class="text-xl font-bold mb-2">Free</h3>
+<p class="text-gray-500 mb-6">Perfect for trying out the platform</p>
+<div class="text-4xl font-bold mb-6">$0<span class="text-lg font-normal text-gray-500">/month</span></div>
+<ul class="space-y-3 mb-8">
+<li class="flex items-center">
+<i class="ri-check-line text-green-500 mr-2"></i>
+<span>10 AI descriptions per month</span>
+</li>
+<li class="flex items-center">
+<i class="ri-check-line text-green-500 mr-2"></i>
+<span>Basic customization</span>
+</li>
+<li class="flex items-center">
+<i class="ri-check-line text-green-500 mr-2"></i>
+<span>Single language support</span>
+</li>
+<li class="flex items-center text-gray-400">
+<i class="ri-close-line mr-2"></i>
+<span>No team access</span>
+</li>
+<li class="flex items-center text-gray-400">
+<i class="ri-close-line mr-2"></i>
+<span>No API access</span>
+</li>
+</ul>
+<a href="#" class="block w-full text-center border border-gray-300 py-2 !rounded-button hover:bg-gray-50 transition-colors duration-200 whitespace-nowrap">Get Started</a>
+</div>
+<div class="bg-white border-2 border-primary rounded p-8 shadow-md relative pricing-card glow-effect">
+<div class="absolute top-0 right-0 bg-primary text-white text-sm py-1 px-3 rounded-bl">Most Popular</div>
+<h3 class="text-xl font-bold mb-2">Pro</h3>
+<p class="text-gray-500 mb-6">For growing businesses</p>
+<div class="text-4xl font-bold mb-6">$19<span class="text-lg font-normal text-gray-500">/month</span></div>
+<ul class="space-y-3 mb-8">
+<li class="flex items-center">
+<i class="ri-check-line text-green-500 mr-2"></i>
+<span>500 AI descriptions per month</span>
+</li>
+<li class="flex items-center">
+<i class="ri-check-line text-green-500 mr-2"></i>
+<span>Advanced customization</span>
+</li>
+<li class="flex items-center">
+<i class="ri-check-line text-green-500 mr-2"></i>
+<span>5 language support</span>
+</li>
+<li class="flex items-center">
+<i class="ri-check-line text-green-500 mr-2"></i>
+<span>Team access (up to 3 users)</span>
+</li>
+<li class="flex items-center text-gray-400">
+<i class="ri-close-line mr-2"></i>
+<span>No API access</span>
+</li>
+</ul>
+<a href="#" class="block w-full text-center bg-primary text-white py-2 !rounded-button hover:bg-gray-800 transition-colors duration-200 whitespace-nowrap">Get Started</a>
+</div>
+<div class="bg-white/80 backdrop-blur-sm border border-gray-100 rounded-xl p-8 pricing-card hover-lift shadow-lg">
+<h3 class="text-xl font-bold mb-2">Enterprise</h3>
+<p class="text-gray-500 mb-6">For large scale operations</p>
+<div class="text-4xl font-bold mb-6">$149<span class="text-lg font-normal text-gray-500">/month</span></div>
+<ul class="space-y-3 mb-8">
+<li class="flex items-center">
+<i class="ri-check-line text-green-500 mr-2"></i>
+<span>Unlimited AI descriptions</span>
+</li>
+<li class="flex items-center">
+<i class="ri-check-line text-green-500 mr-2"></i>
+<span>Complete customization</span>
+</li>
+<li class="flex items-center">
+<i class="ri-check-line text-green-500 mr-2"></i>
+<span>All languages supported</span>
+</li>
+<li class="flex items-center">
+<i class="ri-check-line text-green-500 mr-2"></i>
+<span>Unlimited team access</span>
+</li>
+<li class="flex items-center">
+<i class="ri-check-line text-green-500 mr-2"></i>
+<span>Full API access</span>
+</li>
+</ul>
+<a href="#" class="block w-full text-center border border-gray-300 py-2 !rounded-button hover:bg-gray-50 transition-colors duration-200 whitespace-nowrap">Contact Sales</a>
+</div>
+</div>
+</div>
+</section>
+<!-- About Section -->
+<section id="about" class="py-20 bg-gray-50">
+<div class="container mx-auto px-6">
+<div class="max-w-4xl mx-auto">
+<h2 class="text-4xl font-bold mb-8 text-center text-gray-900 font-['Pacifico']">About DescriptoBot AI</h2>
+<div class="bg-white p-8 rounded shadow-lg mb-8 border border-gray-100 hover:shadow-xl transition-all duration-300">
+<h3 class="text-xl font-semibold mb-4 text-gray-900">Our Mission</h3>
+<p class="text-gray-600 mb-6">At DescriptoBot AI, we're on a mission to revolutionize how businesses create product content. We believe that every product deserves a compelling description that converts browsers into buyers, regardless of your company size or marketing budget.</p>
+<p class="text-gray-600">Founded in 2023 by a team of AI specialists and e-commerce experts, DescriptoBot AI combines cutting-edge natural language processing with deep industry knowledge to deliver descriptions that don't just sound good—they sell.</p>
+</div>
+<div class="bg-white p-8 rounded shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300">
+<h3 class="text-xl font-semibold mb-4 text-gray-900">Our Technology</h3>
+<p class="text-gray-600 mb-6">DescriptoBot AI is powered by a proprietary AI model trained on millions of successful product descriptions across dozens of industries. Our system doesn't just generate generic text—it understands product features, benefits, and how to position them for maximum appeal to your target audience.</p>
+<p class="text-gray-600">We continuously refine our algorithms based on performance data, ensuring that the descriptions we generate keep getting better at driving conversions and engagement.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- CTA Section -->
+<section class="py-20 bg-primary/5 text-gray-900">
+<div class="container mx-auto px-6 text-center">
+<h2 class="text-3xl font-bold mb-6">Ready to Transform Your Product Descriptions?</h2>
+<p class="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">Join thousands of businesses using DescriptoBot to create compelling product content that converts.</p>
+<div class="flex justify-center space-x-4">
+<a href="#" class="bg-primary text-white px-6 py-3 !rounded-button hover:bg-gray-800 transition-colors duration-200 whitespace-nowrap">Start Free Trial</a>
+<a href="#" class="border border-primary text-primary px-6 py-3 !rounded-button hover:bg-primary/5 transition-colors duration-200 whitespace-nowrap">Schedule Demo</a>
+</div>
+</div>
+</section>
+<!-- Footer -->
+<footer class="bg-gray-50 text-gray-600 py-12">
+<div class="container mx-auto px-6">
+<div class="grid md:grid-cols-4 gap-8">
+<div>
+<a href="#" class="font-['Pacifico'] text-2xl text-gray-900 mb-4 block">DescriptoBot</a>
+<p class="text-gray-500">AI-powered product descriptions that convert browsers into buyers.</p>
+</div>
+<div>
+<h4 class="text-gray-900 font-semibold mb-4">Product</h4>
+<ul class="space-y-2">
+<li><a href="#" class="hover:text-primary transition-colors duration-200">Features</a></li>
+<li><a href="#" class="hover:text-primary transition-colors duration-200">Pricing</a></li>
+<li><a href="#" class="hover:text-primary transition-colors duration-200">API</a></li>
+<li><a href="#" class="hover:text-primary transition-colors duration-200">Integrations</a></li>
+</ul>
+</div>
+<div>
+<h4 class="text-gray-900 font-semibold mb-4">Resources</h4>
+<ul class="space-y-2">
+<li><a href="#" class="hover:text-primary transition-colors duration-200">Documentation</a></li>
+<li><a href="#" class="hover:text-primary transition-colors duration-200">Blog</a></li>
+<li><a href="#" class="hover:text-primary transition-colors duration-200">Case Studies</a></li>
+<li><a href="#" class="hover:text-primary transition-colors duration-200">Help Center</a></li>
+</ul>
+</div>
+<div>
+<h4 class="text-gray-900 font-semibold mb-4">Company</h4>
+<ul class="space-y-2">
+<li><a href="#" class="hover:text-primary transition-colors duration-200">About Us</a></li>
+<li><a href="#" class="hover:text-primary transition-colors duration-200">Careers</a></li>
+<li><a href="#" class="hover:text-primary transition-colors duration-200">Contact</a></li>
+<li><a href="#" class="hover:text-primary transition-colors duration-200">Privacy Policy</a></li>
+</ul>
+</div>
+</div>
+<div class="border-t border-gray-200 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
+<p>© 2025 DescriptoBot. All rights reserved.</p>
+<div class="flex space-x-4 mt-4 md:mt-0">
+<a href="#" class="text-gray-400 hover:text-primary transition-colors duration-200">
+<i class="ri-twitter-x-line ri-lg"></i>
+</a>
+<a href="#" class="text-gray-400 hover:text-primary transition-colors duration-200">
+<i class="ri-linkedin-line ri-lg"></i>
+</a>
+<a href="#" class="text-gray-400 hover:text-primary transition-colors duration-200">
+<i class="ri-facebook-line ri-lg"></i>
+</a>
+<a href="#" class="text-gray-400 hover:text-primary transition-colors duration-200">
+<i class="ri-instagram-line ri-lg"></i>
+</a>
+</div>
+</div>
+</div>
+</footer>
+<!-- Chat Interface -->
+<div id="chat-container" class="hidden">
+</div>
+<!-- Chat Window -->
+<div id="chat-window" class="chat-window glass-effect rounded-2xl shadow-2xl w-full mt-4 overflow-hidden flex flex-col border border-white/20">
+<!-- Chat Header -->
+<div class="bg-primary text-white p-4 flex justify-between items-center">
+<div class="flex items-center">
+<div class="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center mr-3">
+<i class="ri-robot-line"></i>
+</div>
+<div>
+<h4 class="font-semibold">DescriptoBot Assistant</h4>
+<p class="text-xs text-white/80">Online</p>
+</div>
+</div>
+<button id="close-chat" class="text-white/80 hover:text-white">
+<i class="ri-close-line ri-lg"></i>
+</button>
+</div>
+<!-- Chat Messages -->
+<div id="chat-messages" class="flex-1 p-4 overflow-y-auto space-y-4" style="max-height: 350px;">
+<div class="chat-message flex">
+<div class="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
+<i class="ri-robot-line"></i>
+</div>
+<div class="bg-gray-100 rounded-lg p-3 max-w-[80%]">
+<p>Hi there! I'm DescriptoBot, your AI assistant for creating amazing product descriptions. How can I help you today?</p>
+</div>
+</div>
+</div>
+<!-- Chat Input -->
+<div id="chat-input-container" class="border-t border-gray-200 p-4">
+<div class="flex">
+<input id="chat-input" type="text" placeholder="Type your message..." class="flex-1 border border-gray-300 rounded-l-lg px-4 py-2 focus:outline-none focus:border-primary">
+<button id="send-message" class="bg-primary text-white px-4 py-2 rounded-r-lg hover:bg-gray-800 transition-colors duration-200">
+<i class="ri-send-plane-fill"></i>
+</button>
+</div>
+<div class="text-xs text-gray-500 mt-2 flex justify-between">
+<span id="message-counter">0/10 messages used</span>
+<span>Free plan</span>
+</div>
+</div>
+<!-- Upgrade Modal (initially hidden) -->
+<div id="upgrade-modal" class="hidden p-6 border-t border-gray-200">
+<h4 class="text-lg font-semibold mb-2">Continue with Pro Plan</h4>
+<p class="text-gray-600 mb-4">You've reached the limit of 10 messages on the free plan. Upgrade to Pro for unlimited conversations.</p>
+<a href="#pricing" class="block w-full text-center bg-primary text-white py-2 !rounded-button hover:bg-gray-800 transition-colors duration-200 whitespace-nowrap">Continue with Pro</a>
+</div>
+</div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+// Scroll Progress Bar
+function updateScrollProgress() {
+const scrollProgress = document.querySelector('.scroll-progress-bar');
+const scrollPosition = window.scrollY;
+const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
+const progress = (scrollPosition / totalHeight) * 100;
+scrollProgress.style.width = `${progress}%`;
+}
+// Section Indicator
+function updateActiveSection() {
+const sections = document.querySelectorAll('section');
+const dots = document.querySelectorAll('.section-dot');
+sections.forEach((section, index) => {
+const rect = section.getBoundingClientRect();
+const dot = dots[index];
+if (rect.top <= window.innerHeight * 0.5 && rect.bottom >= window.innerHeight * 0.5) {
+dot.classList.add('active');
+} else {
+dot.classList.remove('active');
+}
+});
+}
+// Navigation Active State
+function updateActiveNavLink() {
+const navLinks = document.querySelectorAll('.nav-link');
+const sections = document.querySelectorAll('section');
+sections.forEach((section, index) => {
+const rect = section.getBoundingClientRect();
+const navLink = navLinks[index];
+if (rect.top <= window.innerHeight * 0.5 && rect.bottom >= window.innerHeight * 0.5) {
+navLink?.classList.add('active');
+} else {
+navLink?.classList.remove('active');
+}
+});
+}
+// Add click handlers to section dots
+document.querySelectorAll('.section-dot').forEach((dot, index) => {
+dot.addEventListener('click', () => {
+const sections = document.querySelectorAll('section');
+sections[index].scrollIntoView({ behavior: 'smooth' });
+});
+});
+window.addEventListener('scroll', () => {
+updateScrollProgress();
+updateActiveSection();
+updateActiveNavLink();
+});
+// Initial update
+updateScrollProgress();
+updateActiveSection();
+updateActiveNavLink();
+// Chat functionality
+const chatButton = document.getElementById('chat-button');
+const chatWindow = document.getElementById('chat-window');
+const closeChat = document.getElementById('close-chat');
+const chatInput = document.getElementById('chat-input');
+const sendMessage = document.getElementById('send-message');
+const chatMessages = document.getElementById('chat-messages');
+const messageCounter = document.getElementById('message-counter');
+const chatInputContainer = document.getElementById('chat-input-container');
+const upgradeModal = document.getElementById('upgrade-modal');
+let messageCount = 0;
+chatButton.addEventListener('click', function() {
+chatWindow.classList.toggle('open');
+if (chatWindow.classList.contains('open')) {
+chatInput.focus();
+}
+});
+closeChat.addEventListener('click', function() {
+chatWindow.classList.remove('open');
+});
+function sendUserMessage() {
+const message = chatInput.value.trim();
+if (message === '') return;
+// Add user message
+const userMessageElement = document.createElement('div');
+userMessageElement.className = 'chat-message flex justify-end';
+userMessageElement.innerHTML = `
+<div class="bg-primary text-white rounded-lg p-3 max-w-[80%]">
+<p>${message}</p>
+</div>
+<div class="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center ml-3 flex-shrink-0">
+<i class="ri-user-line"></i>
+</div>
+`;
+chatMessages.appendChild(userMessageElement);
+chatMessages.scrollTop = chatMessages.scrollHeight;
+// Clear input
+chatInput.value = '';
+// Increment message count
+messageCount++;
+messageCounter.textContent = `${messageCount}/10 messages used`;
+// Check if limit reached
+if (messageCount >= 10) {
+chatInputContainer.classList.add('hidden');
+upgradeModal.classList.remove('hidden');
+} else {
+// Simulate bot response after a short delay
+setTimeout(function() {
+const botResponses = [
+"I can help you create a compelling description for your product. What type of product are you selling?",
+"Great! Could you share some key features or benefits of your product?",
+"Thanks for the details. Would you like a description that's more technical or more benefit-focused?",
+"I understand what you're looking for. Give me a moment to craft something...",
+"Here's a draft description for your product. Would you like me to make any adjustments?",
+"I can definitely adjust the tone to be more conversational. Let me revise that for you.",
+"How about emphasizing the unique selling points more prominently?",
+"Would you like me to add some suggested keywords for SEO purposes?",
+"I've refined the description based on your feedback. How does this look now?",
+"Perfect! You can now copy this description to your product page. Is there anything else you need help with?"
+];
+const botMessageElement = document.createElement('div');
+botMessageElement.className = 'chat-message flex';
+botMessageElement.innerHTML = `
+<div class="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
+<i class="ri-robot-line"></i>
+</div>
+<div class="bg-gray-100 rounded-lg p-3 max-w-[80%]">
+<p>${botResponses[Math.min(messageCount - 1, botResponses.length - 1)]}</p>
+</div>
+`;
+chatMessages.appendChild(botMessageElement);
+chatMessages.scrollTop = chatMessages.scrollHeight;
+}, 1000);
+}
+}
+sendMessage.addEventListener('click', sendUserMessage);
+chatInput.addEventListener('keypress', function(e) {
+if (e.key === 'Enter') {
+sendUserMessage();
+}
+});
+});
+// Smooth scroll for anchor links
+document.addEventListener('DOMContentLoaded', function() {
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+anchor.addEventListener('click', function(e) {
+e.preventDefault();
+const targetId = this.getAttribute('href');
+if (targetId === '#') return;
+const targetElement = document.querySelector(targetId);
+if (targetElement) {
+window.scrollTo({
+top: targetElement.offsetTop - 80,
+behavior: 'smooth'
+});
+}
+});
+});
+});
+// Animate elements on scroll
+document.addEventListener('DOMContentLoaded', function() {
+const sections = document.querySelectorAll('section');
+sections.forEach(section => {
+section.classList.add('scroll-section');
+});
+const animateOnScroll = function() {
+sections.forEach(section => {
+const sectionTop = section.getBoundingClientRect().top;
+const windowHeight = window.innerHeight;
+if (sectionTop < windowHeight * 0.75) {
+section.classList.add('in-view');
+} else {
+section.classList.remove('in-view');
+}
+});
+const elements = document.querySelectorAll('.container > div');
+const elements = document.querySelectorAll('.container > div');
+elements.forEach(element => {
+const elementPosition = element.getBoundingClientRect().top;
+const windowHeight = window.innerHeight;
+if (elementPosition < windowHeight - 100) {
+if (!element.classList.contains('animate-fade-in') && !element.classList.contains('animate-slide-up')) {
+element.classList.add('animate-fade-in');
+}
+}
+});
+};
+window.addEventListener('scroll', animateOnScroll);
+animateOnScroll(); // Run once on load
+});
+</script>
 </body>
 </html>
